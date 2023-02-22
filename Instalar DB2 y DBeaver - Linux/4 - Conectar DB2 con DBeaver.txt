@@ -1,0 +1,25 @@
+## Basado en una página que no pude volver a encontrar.
+## DBeaver se conecta a una base de datos de una instancia determinada, tiene que estar creada, y tiene que estar conectada en el contenedor de db2.
+
+# Abrir db2 en docker si no estuviera ya abierto (con todo el comando o el alias)
+# Entrar a la consola (o agregarle db2 adelante al comando que sigue)
+db2
+# Conectar con la base de datos (sample o la que fuera)
+connect to la-base-de-datos
+
+## Buscar la ip correspondiente al contenedor de db2, dentro de toda la información del contenedor
+# Debería devolver un par de renglones que contienen la IP local del contenedor (por ejemplo 172.17.0.2)
+sudo docker container inspect mydb2 | grep -i 'IPAddress'
+
+# Abrir DBeaver
+# Crear una nueva conexión a una base de datos db2: 
+Database (menú de arriba) --> New Database Connection --> DB2 LUW
+
+Rellenar con los siguientes datos: 
+Host: la ip del contenedor (172.17.0.2 o la que corresponda)
+Port: el puerto del contenedor (el de la instalación de db2)
+Database: la-base-de-datos (sample, o la que fuera)
+Username: db2inst1
+Password: pass (la de la instalación de db2)
+
+## Si llegaste hasta acá sin errores, debería estar todo instalado y conectado correctamente.

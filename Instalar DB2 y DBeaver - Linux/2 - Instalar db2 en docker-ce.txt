@@ -1,0 +1,57 @@
+## Basado en https://www.youtube.com/watch?v=gJfmoxkWZFg o acortado https://youtu.be/gJfmoxkWZFg
+## No es necesario crear una cuenta de IBM
+
+## Docker necesita permisos de superusuario.
+## Se puede crear un grupo aparte para docker para no tener que poner sudo en cada comando (se puede buscar en internet), pero no es obligatorio.
+
+# Bajar la imagen de db2 a través de docker (puede tardar)
+sudo docker pull ibmcom/db2
+
+# Crear y correr el contenedor que tiene db2 ('\' es para escapar el enter, podrían sacarse y poner todo en una línea, pero es más legible)
+# Aclaraciones luego del comando
+sudo docker run -itd \
+--name mydb2 \
+--privileged=true \ 
+-p 50000:50000 \
+-e LICENSE=accept \
+-e DB2INST1_PASSWORD=pass \
+-e DBNAME=testdb \
+-v ~/database:/database \
+ibmcom/db2
+# Aclaraciones:
+# -itd: terminal interactiva que corre de fondo (background)
+# --name [nombre_del_container] (mydb2 por ponerle algún nombre)
+# -p [puerto] (50000 por poner algún puerto) (se usa para dbeaver)
+# DB2INST1_PASSWORD=[la_contraseña_que_se_quiera] (se usa para dbeaver)
+# -v [carpeta donde se monta en la pc:carpeta del container] (por defecto, en database del usuario)
+
+# Para más información del comando anterior escribir
+man docker run
+
+## Aclaración: el comando se corre sólo la primera vez
+# Una vez creado con contenedor con docker run, se abre escribiendo
+sudo docker start mydb2
+
+# Abrir el contenedor de db2 e ingresar al usuario correspondiente
+sudo docker exec -it mydb2 bash -c "su - db2inst1"
+
+# Para generar una base de datos de ejemplo (puede tomar varios minutos), escribir
+# -force es para que la vuelva a crear en caso de que detecte un sample ya creado
+db2sampl -force
+
+# Para interactuar con el motor, se puede poner db2 antes del comando, o ingresar a la consola de db2 (limitada en funciones) escribiendo 
+db2
+# Para salir de la consola de db2, escribir 
+quit
+# Para salir del contenedor de db2, escribir 
+exit
+# Para cerrar/frenar el contenedor, escribir
+sudo docker stop mydb2
+
+## Aliases
+# Para hacer más simple abrir y cerrar el contenedor, creé dos aliases que se pueden agregar al .bashrc
+alias abrirdb2='sudo docker start mydb2 && sudo docker exec -it mydb2 bash -c "su - db2inst1"'
+alias stopdb2='sudo docker stop mydb2'
+
+# Entonces con simplemente escribir abrirdb2 y la contraseña del usuario (no la de db2inst1) se abre lo necesario.
+
